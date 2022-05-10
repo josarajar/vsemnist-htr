@@ -60,6 +60,8 @@ class Train_Eval():
     def __init__(self,model,epochs=100,lr=0.001, modelpath=None, logger=None):
         
         self.model = model
+
+        self.logger = logger
         
         self.lr = lr #Learning Rate
         
