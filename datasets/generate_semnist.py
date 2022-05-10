@@ -1,4 +1,3 @@
-from types import SimpleNamespace
 import torch
 from torchvision import transforms as T
 from torch.utils.data import DataLoader
@@ -7,9 +6,6 @@ import os
 import numpy as np
 import copy
 from tqdm import tqdm
-
-
-
 
 def load_EMNIST(datapath = '~/.pytorch/EMNIST_data/', split ='bymerge', distort='True'):
     
@@ -58,7 +54,10 @@ def create_folder(path, logger):
             
         else:
             msg = 'Successfully created the directory {}'.format(path)
-            logger.error(msg) if logger else print(msg)
+            if logger:
+                logger.error(msg)
+            else:
+                print(msg)
 
 def save_sample(root, image, seq, idx, dataset='demo', logger=None):
     transformToPIL = T.ToPILImage() # transformer for saving Images as PIL    

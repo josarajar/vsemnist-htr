@@ -75,7 +75,7 @@ def main():
 
     if args.mode == 'train':
         modelpath = args.model
-        trainablemodel = Train_Eval(network, args.epochs, args.lr, modelpath = modelpath)
+        trainablemodel = Train_Eval(network, args.epochs, args.lr, modelpath = modelpath, logger=logger)
         try:
             trainablemodel.trainloop(trainloader, validloader)
             
