@@ -60,21 +60,21 @@ def create_folder(path, logger):
             msg = 'Successfully created the directory {}'.format(path)
             logger.error(msg) if logger else print(msg)
 
-def save_sample(root, image, seq, idx, dataset='demo'):
+def save_sample(root, image, seq, idx, dataset='demo', logger=None):
     transformToPIL = T.ToPILImage() # transformer for saving Images as PIL    
     if isinstance(root, torch._six.string_classes):
         root = os.path.expanduser(root) # In case we use '~/.pytorch' path for example
-    create_folder(root)
+    create_folder(root, logger=logger)
     database_path = os.path.join(root,'SEMNIST')
-    create_folder(database_path)
+    create_folder(database_path, logger=logger)
 
     set_path = os.path.join(database_path,dataset+'set') # Check if set is train or test
-    create_folder(set_path)
+    create_folder(set_path, logger=logger)
     
     set_img_path = os.path.join(set_path, 'img')
     set_labels_path = os.path.join(set_path, 'labels')
-    create_folder(set_img_path)
-    create_folder(set_labels_path)
+    create_folder(set_img_path, logger=logger)
+    create_folder(set_labels_path, logger=logger)
     
     img_path = os.path.join(set_img_path,'semnist_' + dataset + '_' + '{:0>6}'.format(idx) + '.png') 
     seq_path = os.path.join(set_labels_path,'semnist_' + dataset + '_' + '{:0>6}'.format(idx) + '.txt')
