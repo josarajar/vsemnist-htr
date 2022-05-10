@@ -56,7 +56,16 @@ def eval_performance(model, dataloader, mode='seqCER', device='cpu'):
         return CER/len(dataloader)
     
 class Train_Eval():
-    """Training and evaluation method"""
+    """Training and evaluation class. 
+    trainer = Train_Eval(model,epochs=100,lr=0.001, modelpath=None, logger=None)
+    
+    Args: 
+        model: nn model to be trained.
+        epochs: number of training epochs
+        lr: learning rate for optimizer
+        modelpath: str, path to save the model
+        logger: logger to save comments in log files and print output
+    """
     def __init__(self,model,epochs=100,lr=0.001, modelpath=None, logger=None):
         
         self.model = model

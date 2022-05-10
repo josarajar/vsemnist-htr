@@ -15,7 +15,15 @@ from utils.tools import Train_Eval, plot_loss_during_training
 
 def main():
     """
-    Main function of vsemnist-htr project.
+    Main function of vsemnist-htr project, where the goal is to perform a handwriting text recognition task over
+    a syntetic htr dataset that we call SEMMNIIST of Sequential Extended MNIST.
+    
+    This function takes a model --model from an architecture 
+    indicated as argument --arch and performs a task over it. Task could be train if --mode is set to train. Training
+    from scratch a model and save it in --model path. If a model already exists in --model path, it retrain the number
+    of epochs indicated in --epoch. 
+
+    If --mode is set to test or eval, it will perform an evaluation over a testset.
     """
 
     # 1. Let's check the command line arguments, if something is missing or misspeled, it will finish the execution.
@@ -79,7 +87,9 @@ def main():
         try:
             trainablemodel.trainloop(trainloader, validloader)
             
+            
             torch.save(trainablemodel.model.state_dict(), modelpath)
+            logger.info('Model saved in'.format(modelpath))
             plot_loss_during_training(trainablemodel.loss_during_training, trainablemodel.valid_loss_during_training, executionfilesdir, logger)
         except Exception as e:
             logger.error('Some error occur during training. Aborting...\n' + e)
