@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 import torch
 from torchvision import transforms as T
 from torch.utils.data import DataLoader
@@ -5,6 +6,7 @@ from torchvision import datasets, models
 import os
 import numpy as np
 import copy
+from tqdm import tqdm
 
 
 
@@ -30,7 +32,7 @@ def load_EMNIST(datapath = '~/.pytorch/EMNIST_data/', split ='bymerge', distort=
     validloader = copy.deepcopy(trainloader)  # Creates a copy of the object 
 
     #We take the first 550k images for training
-    trainloader.dataset.data = trainloader.dataset.data[:55000,:,:]
+    trainloader.dataset.data = trainloader.dataset.data[:550000,:,:]
     trainloader.dataset.targets = trainloader.dataset.targets[:550000]
 
     #And the rest for validation
@@ -43,15 +45,20 @@ def generate_random_lengths(min_length=3, max_length=10, n_sequences=1):
     assert max_length>=min_length, 'max_length={} should be >= min_length={}'.format(max_length, min_length)       
     return np.random.randint(min_length, max_length+1, n_sequences) #max-length+1 so length 10 is also included
 
-def create_folder(path):
+def create_folder(path, logger):
     if not os.path.isdir(path):
-        print('Creating root folder '+ path +'...') 
+        if logger:
+            logger.info('Creating root folder '+ path +'...')
+        else:
+            print('Creating root folder '+ path +'...') 
         try:
             os.mkdir(path)
         except OSError:
-            print ('Creation of the directory {} failed'.format(path))
+            msg = 'Creation of the directory {} failed'.format(path)             
+            
         else:
-            print ('Successfully created the directory {}'.format(path))    
+            msg = 'Successfully created the directory {}'.format(path)
+            logger.error(msg) if logger else print(msg)
 
 def save_sample(root, image, seq, idx, dataset='demo'):
     transformToPIL = T.ToPILImage() # transformer for saving Images as PIL    
@@ -105,14 +112,32 @@ def generate_sequences(dataloader, sequence_lengths, save = False, root='~/.pyto
     if not save:
         return image_list, label_list
 
-def generateSEMNIST(semnistpath = '~/.pytorch/SEMNIST_data/', emnistpath = '~/.pytorch/SEMNIST_data/', distort = True, split='bymerge', n_train_sequences = 100000, n_valid_sequences = 20000, n_test_sequences = 16000):
+def generateSEMNIST(semnistpath = '~/.pytorch/SEMNIST_data/', emnistpath = '~/.pytorch/SEMNIST_data/', distort = True, split='bymerge', n_train_sequences = 80000, n_valid_sequences = 20000, n_test_sequences = 16000, logger=None):
     """
     Generates SEMNIST train, valid and test set from EMNIST dataset. The generation procedure generates random sequences of random sizes between 3 and 10 characters.
     """
     trainloader, validloader, testloader = load_EMNIST(emnistpath, split, distort)
     train_seq_lengths = generate_random_lengths(min_length=3, max_length=10, n_sequences=n_train_sequences)
     test_seq_lengths = generate_random_lengths(min_length=3, max_length=10, n_sequences=n_test_sequences)
-    demo_seq_lengths = generate_random_lengths(min_length=3, max_length=10, n_sequences=n_valid_sequences)
+    valid_seq_lengths = generate_random_lengths(min_length=3, max_length=10, n_sequences=n_valid_sequences)
     generate_sequences(trainloader, train_seq_lengths, save = True, root=semnistpath, dataset='train')
     generate_sequences(testloader, test_seq_lengths, save = True, root=semnistpath, dataset='test')
-    generate_sequences(trainloader, demo_seq_lengths, save = True, root=semnistpath, dataset='demo')
+    generate_sequences(validloader, valid_seq_lengths, save = True, root=semnistpath, dataset='valid')
+
+def check_semnist_dataset_existance(semnistpath, logger):
+    """If semnist dataset is incomplete return False, if not dataset exists and is complete and return True
+    """
+    root = semnistpath
+    if isinstance(root, torch._six.string_classes):
+        root = os.path.expanduser(root) # In case we use '~/.pytorch' path for example  
+    datapath = os.path.join(root,'SEMNIST')
+    trainpath = os.path.join(datapath,'trainset')
+    testpath = os.path.join(datapath,'testset')
+    validpath = os.path.join(datapath,'validset')
+    print(root, trainpath, testpath, validpath, datapath)
+
+    
+    if not os.path.isdir(root) or not os.path.isdir(datapath) or not os.path.isdir(trainpath) or not os.path.isdir(testpath) or not os.path.isdir(validpath):
+        return False
+    else:
+        return True

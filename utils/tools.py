@@ -1,9 +1,12 @@
+from cmath import exp
 from torch import nn
 from torch import optim
 import torch
 import time
 from tqdm import tqdm
-
+import logging
+import matplotlib.pyplot as plt
+import os
 
 def eval_performance(model, dataloader, mode='seqCER', device='cpu'):
     """
@@ -54,7 +57,7 @@ def eval_performance(model, dataloader, mode='seqCER', device='cpu'):
     
 class Train_Eval():
     """Training and evaluation method"""
-    def __init__(self,model,epochs=100,lr=0.001):
+    def __init__(self,model,epochs=100,lr=0.001, modelpath=None, logger=None):
         
         self.model = model
         
@@ -74,7 +77,12 @@ class Train_Eval():
         
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+        if self.logger:
+            self.logger.info('Training in device {}.'.format(self.device))
+
         self.model.to(self.device)
+
+        self.modelpath = modelpath
         
     def trainloop(self,trainloader,validloader):
         
@@ -155,12 +163,69 @@ class Train_Eval():
             self.model.train()
 
             if(e % 1 == 0): # Every epoch
-
-                print('Epoch {}. Training loss: {}, Validation loss: {}. Time per epoch: {} seconds'.format( 
+                msg = 'Epoch {}. Training loss: {}, Validation loss: {}. Time per epoch: {} seconds'.format( 
                       e, self.loss_during_training[-1], self.valid_loss_during_training[-1], 
                     
-                       (time.time() - start_time)))
+                       (time.time() - start_time))
+                if self.logger:
+                    self.logger.info(msg)
+                else:
+                    print(msg)
                 
             if(e % 10 ==0): # Every 10 epochs):
-                print('Epoch {}. Training CER: {}, Validation CER: {}.'.format(e, eval_performance(self. model, trainloader, self.device),
-                                                                                      eval_performance(self.model,validloader, self.device)))
+                if self.modelpath:
+                    torch.save(self.model.state_dict(), self.modelpath)
+                    msg = 'Model saved in {}'.format(self.modelpath)
+                    if self.logger:
+                        self.logger.info(msg)
+                    else:
+                        print(msg)
+                msg = 'Epoch {}. Training CER: {}, Validation CER: {}.'.format(e, eval_performance(self. model, trainloader, self.device),
+                                                                                      eval_performance(self.model,validloader, self.device))
+                
+                if self.logger:
+                    self.logger.info(msg)
+                else:
+                    print(msg)
+
+
+def create_logger(name, log_info_file, error_info_file, console_level=logging.INFO, formatter=None):
+    if not formatter:
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    # create file handler which logs info messages
+    ifh = logging.FileHandler(log_info_file)
+    ifh.setLevel(logging.INFO)
+    # create file handler which logs from error messages
+    efh = logging.FileHandler(error_info_file)
+    efh.setLevel(logging.WARNING)
+    # create console handler with a higher log level
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    # create formatter and add it to the handlers
+    ch.setFormatter(formatter)
+    ifh.setFormatter(formatter)
+    efh.setFormatter(formatter)
+    # add the handlers to logger
+    logger.addHandler(ch)
+    logger.addHandler(ifh)
+    logger.addHandler(efh)
+
+    return logger
+
+def plot_loss_during_training(loss_during_training, valid_loss_during_training, experiment_root_path, logger):
+    plt.plot(loss_during_training)
+    plt.plot(valid_loss_during_training)
+    plt.title('Loss during training')
+    plt.xlabel('Epoch')
+    plt.ylabel('loss')
+    graphdir = os.path.join(experiment_root_path,'graphs')
+    try:
+        os.mkdir(graphdir)
+    except:
+        logger.error("Couldn't save loss during training figure in {}".format(graphdir))
+    figdir = os.path.join(graphdir, 'loss_during_training')
+    plt.savefig(figdir)
+    logger.info('Loss during training saved in {}'.format(figdir))
+    plt.show()

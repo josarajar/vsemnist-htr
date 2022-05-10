@@ -2,7 +2,7 @@ from torch import nn
 import torch
 import torch.nn.functional as F
 
-class CNN(nn.Module):
+class Basic_CNN(nn.Module):
     def __init__(self,height,nlabels,prob): #Nlabels will be 47 in our case
         super().__init__()
         
@@ -73,7 +73,7 @@ class CNN(nn.Module):
         return x
     
     
-class STN_CNN(nn.Module):
+class Basic_CNN_STN(nn.Module):
     def __init__(self,height,nlabels,prob): #Nlabels will be 47 in our case
         super().__init__()
         

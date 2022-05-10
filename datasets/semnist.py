@@ -2,8 +2,10 @@ import torch
 import os
 import numpy as np
 from torchvision.datasets import VisionDataset
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Callable, Optional, Tuple
 from PIL import Image
+import torchvision.transforms as T
+from torch.utils.data import DataLoader
 
 class SEMNIST(VisionDataset):
     def __init__(
@@ -83,3 +85,22 @@ def collate_semnist_fixed_length(data):
     Callable collate_semnist when fixed_lenght is neede by the model. See collate_semnist for arguments and functionality.
     """
     return collate_semnist(data, fixed_width = True)
+
+def get_SEMNIST_loaders(root = '~/.pytorch/SEMNIST_data/', batch_size = 64, normalize=True, shuffle=True):
+
+    if normalize:
+        transform = T.Compose([T.ToTensor(),
+                              T.Normalize((0.5,), (0.5,)),
+                              ])
+    else:
+        transform = T.ToTensor()
+
+    trainset = SEMNIST(root, dataset = 'train', transform = transform)
+    validset = SEMNIST(root, dataset = 'train', transform = transform)
+    testset = SEMNIST(root, dataset = 'test', transform = transform)
+
+    trainloader = DataLoader(trainset, batch_size, shuffle=True, collate_fn=collate_semnist)
+    validloader = DataLoader(validset, batch_size, shuffle=False, collate_fn=collate_semnist)
+    testloader = DataLoader(testset, batch_size, shuffle=False, collate_fn=collate_semnist)
+
+    return trainloader, validloader, testloader
