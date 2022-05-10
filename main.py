@@ -1,6 +1,17 @@
 import sys
 import argparse
 
+
+def main():
+    try:
+        args = cmdline_args()
+        print(args)
+    except:
+        print('Try $python <script_name> "Hello" 123 --enable')
+
+    print()
+
+    
 def cmdline_args():
         # Make parser object
     p = argparse.ArgumentParser(description=__doc__,
@@ -22,19 +33,9 @@ def cmdline_args():
     return(p.parse_args())
 
 
+
 # Try running with these args
 #
 # "Hello" 123 --enable
 if __name__ == '__main__':
-    
-    if sys.version_info<(3,5,0):
-        sys.stderr.write("You need python 3.5 or later to run this script\n")
-        sys.exit(1)
-        
-    try:
-        args = cmdline_args()
-        print(args)
-    except:
-        print('Try $python <script_name> "Hello" 123 --enable')
-
-    print()
+    main()
