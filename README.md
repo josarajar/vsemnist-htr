@@ -8,3 +8,4 @@ Thera are also two notebooks where there are some explanations about all the pro
 For trying the code, you can execute the following command:
 
 python  main.py --mode test --arch Basic_CNN --model ./models/pretrained/cnn_v1 --executionid my_experiment`
+
