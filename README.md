@@ -7,5 +7,9 @@ Thera are also two notebooks where there are some explanations about all the pro
 
 For trying the code, you can execute the following command:
 
-python  main.py --mode test --arch Basic_CNN --model ./models/pretrained/cnn_v1 --executionid my_experiment`
+python  main.py --mode test --arch Basic_CNN --model ./models/pretrained/cnn_v1 --executionid my_experiment
+
+The previous command will test the Basic_CNN model saved in models/pretrained. If it is the first time you use the code, the SEMNIST database will be created.
+
+To execute the code, you can build a conda environment using the .yml file in the repository. In this file you can find all the dependencies.
 
