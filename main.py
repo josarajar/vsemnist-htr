@@ -66,7 +66,7 @@ def main():
     elif arch == 'CNN_6':
         network = htrModels.CNN_6(height=28, nlabels=47, prob=args.dropout)
     elif arch == 'Basic_CNN_STN':
-        network == htrModels.Basic_CNN_STN(height=28, nlabels=47, prob=args.dropout)
+        network = htrModels.Basic_CNN_STN(height=28, nlabels=47, prob=args.dropout)
     else:
         logger.info("Model {} doesn't implemented yet".format(arch))
         logger.error("Aborting since model {} doesn't implemented yet... ".format(arch))
