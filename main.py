@@ -55,10 +55,6 @@ def main():
     else:
         logger.info("SEMNIST has been already created in {}. Loading datasset...".format(args.semnistpath))
     
-    # Instantiating dataloaders
-    logger.info("Initializing dataloaders.")
-    trainloader, validloader, testloader = get_SEMNIST_loaders(args.semnistpath, args.batch, fixed_width=)
-
     # 4. Instantiate the model we want to train, evaluate or get predictions.
     arch = args.arch 
     if arch == 'Basic_CNN':
