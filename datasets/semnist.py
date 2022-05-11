@@ -86,7 +86,7 @@ def collate_semnist_fixed_length(data):
     """
     return collate_semnist(data, fixed_width = True)
 
-def get_SEMNIST_loaders(root = '~/.pytorch/SEMNIST_data/', batch_size = 64, normalize=True, shuffle=True):
+def get_SEMNIST_loaders(root = '~/.pytorch/SEMNIST_data/', batch_size = 64, normalize=True, shuffle=True, fixed_width=False):
 
     if normalize:
         transform = T.Compose([T.ToTensor(),

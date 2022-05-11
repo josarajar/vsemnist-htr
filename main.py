@@ -57,7 +57,7 @@ def main():
     
     # Instantiating dataloaders
     logger.info("Initializing dataloaders.")
-    trainloader, validloader, testloader = get_SEMNIST_loaders(args.semnistpath, args.batch)
+    trainloader, validloader, testloader = get_SEMNIST_loaders(args.semnistpath, args.batch, fixed_width=)
 
     # 4. Instantiate the model we want to train, evaluate or get predictions.
     arch = args.arch 
@@ -67,11 +67,16 @@ def main():
         network = htrModels.CNN_6(height=28, nlabels=47, prob=args.dropout)
     elif arch == 'Basic_CNN_STN':
         network = htrModels.Basic_CNN_STN(height=28, nlabels=47, prob=args.dropout)
+        fixed_width = True # For STN model, width of input images shold be the same
     else:
         logger.info("Model {} doesn't implemented yet".format(arch))
         logger.error("Aborting since model {} doesn't implemented yet... ".format(arch))
         sys.exit(0)
     
+    # Instantiating dataloaders
+    logger.info("Initializing dataloaders.")
+    trainloader, validloader, testloader = get_SEMNIST_loaders(args.semnistpath, args.batch, fixed_width=fixed_width)
+
     # Let's load the model in case it has been already pretrained 
     if args.pretrained or args.mode in ['eval', 'test', 'predict']:
         try:
