@@ -96,7 +96,7 @@ def get_SEMNIST_loaders(root = '~/.pytorch/SEMNIST_data/', batch_size = 64, norm
         transform = T.ToTensor()
 
     trainset = SEMNIST(root, dataset = 'train', transform = transform)
-    validset = SEMNIST(root, dataset = 'train', transform = transform)
+    validset = SEMNIST(root, dataset = 'valid', transform = transform)
     testset = SEMNIST(root, dataset = 'test', transform = transform)
 
     trainloader = DataLoader(trainset, batch_size, shuffle=True, collate_fn=collate_semnist)
