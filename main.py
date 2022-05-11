@@ -59,10 +59,10 @@ def main():
     arch = args.arch 
     if arch == 'Basic_CNN':
         network = htrModels.Basic_CNN(height=28, nlabels=47,prob=args.dropout)
-        fixed_length = False
+        fixed_width = False
     elif arch == 'CNN_6':
         network = htrModels.CNN_6(height=28, nlabels=47, prob=args.dropout)
-        fixed_length = False
+        fixed_width = False
     elif arch == 'Basic_CNN_STN':
         network = htrModels.Basic_CNN_STN(height=28, nlabels=47, prob=args.dropout)
         fixed_width = True # For STN model, width of input images shold be the same
